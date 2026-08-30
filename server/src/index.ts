@@ -12,4 +12,4 @@ const { url } = await startStandaloneServer(server, {
   listen: { port: 4000 },
 });
 
-console.log("\x1b[32m" + `Server is launched on ${url}`);
+console.log("\x1b[32m" + `Server is launched on ${url}` + "\x1b[0m");
