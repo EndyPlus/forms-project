@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
+import { mockedForms, mockedResponses } from "./mock.js";
 
-interface Form {
+export interface Form {
   id: string;
   title: string;
   description?: string | null;
@@ -21,36 +22,16 @@ interface Answer {
   value: string[];
 }
 
-interface Response {
+export interface Response {
   id: string;
   formId: string;
   answers: Answer[];
   submittedAt: string;
 }
 
-const forms: Form[] = [
-  // {
-  //   id: "550b9757-e999-40f6-b4d0-3b57669ceb72",
-  //   title: "Test Form",
-  //   description: "test description :D",
-  //   questions: [
-  //     {
-  //       id: "527a024f-d00a-4ad8-89bc-799ae3f64fdf",
-  //       title: "What is your name?",
-  //       type: "TEXT",
-  //       options: null,
-  //     },
-  //     {
-  //       id: "8f761e78-96d1-452b-a1b2-0c270eab9136",
-  //       title: "What is your favourite day of week?",
-  //       type: "MULTIPLE_CHOICE",
-  //       options: ["Monday", "Friday", "Saturday"],
-  //     },
-  //   ],
-  // },
-];
+const forms: Form[] = [...mockedForms];
 
-const responses: Response[] = [];
+const responses: Response[] = [...mockedResponses];
 
 export const resolvers = {
   Query: {

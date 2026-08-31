@@ -52,5 +52,6 @@ export const typeDefs = `#graphql
 
   input AnswerInput {
     questionId: ID!
+    value: [String!]!
   }
 `;
