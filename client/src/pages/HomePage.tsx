@@ -1,45 +1,49 @@
 import { Link } from "react-router";
-import { useAppDispatch, useAppSelector } from "../logic/hooks/useRedux";
-import { decrement, increment } from "../logic/store/slices/testSlice";
-import { useGetTestByNameQuery } from "../services/testApi";
 import { useGetFormsQuery } from "../services/generatedFormsApi";
+import { PageError, PageLoader } from "../components/common/UIStates";
+import { FormCard } from "../components/forms/FormCard";
 
 export function HomePage() {
-  const count = useAppSelector((state) => state.test.value);
-  const dispatch = useAppDispatch();
+  const { data, isLoading, isError } = useGetFormsQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
 
-  // const { data, error, isLoading } = useGetTestByNameQuery("pikachu");
+  if (isLoading) return <PageLoader message="Loading forms..." />;
+  if (isError) return <PageError message="Failed to load forms." />;
 
-  // console.log(isLoading);
-  // console.log(error);
-  // console.log(data);
-
-  const { data } = useGetFormsQuery();
-
-  console.log(data);
+  const forms = data?.forms || [];
 
   return (
-    <div>
-      <Link to="/forms/new" className="text-2xl font-semibold text-amber-800">
-        New
-      </Link>
-
-      <div>
-        <p>{count}</p>
-        <button onClick={() => dispatch(increment())}>+</button>
-        <button onClick={() => dispatch(decrement())}>-</button>
+    <main className="max-w-2xl mx-auto p-6 space-y-6">
+      <div className="flex items-center justify-between pb-4 border-b border-gray-200">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Forms</h1>
+          <p className="text-sm text-gray-500">Manage and fill out forms</p>
+        </div>
+        <Link
+          to="/forms/new"
+          className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-md text-sm transition-colors"
+        >
+          + Create Form
+        </Link>
       </div>
 
-      <ul className="mt-4">
-        <li>
-          <Link to="/forms/1/fill">Fill 1</Link>
-          <Link to="/forms/1/responses">Responses 1</Link>
-        </li>
-        <li>
-          <Link to="/forms/2/fill">Fill 2</Link>
-          <Link to="/forms/2/responses">Responses 2</Link>
-        </li>
-      </ul>
-    </div>
+      {forms.length === 0 ? (
+        <p className="text-gray-500 text-center py-8">
+          No forms available yet.
+        </p>
+      ) : (
+        <ul className="space-y-3">
+          {forms.map((form) => (
+            <FormCard
+              key={form.id}
+              id={form.id}
+              title={form.title}
+              description={form.description}
+            />
+          ))}
+        </ul>
+      )}
+    </main>
   );
 }

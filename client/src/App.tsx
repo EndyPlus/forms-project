@@ -10,7 +10,7 @@ export function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" index element={<HomePage />} />
+        <Route path="/" element={<HomePage />} />
 
         <Route path="forms">
           <Route path="new" element={<CreateFormPage />} />

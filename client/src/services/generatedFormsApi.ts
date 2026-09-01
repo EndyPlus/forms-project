@@ -4,104 +4,58 @@ type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 import type { DocumentTypeDecoration } from '@graphql-typed-document-node/core';
 import { api } from './formsApi';
-export type Maybe<T> = T | null;
-export type InputMaybe<T> = Maybe<T>;
-/** All built-in and custom scalars, mapped to their actual values */
-export type Scalars = {
-  ID: { input: string; output: string; }
-  String: { input: string; output: string; }
-  Boolean: { input: boolean; output: boolean; }
-  Int: { input: number; output: number; }
-  Float: { input: number; output: number; }
-};
-
-export type Answer = {
-  __typename?: 'Answer';
-  questionId: Scalars['ID']['output'];
-  value: Array<Scalars['String']['output']>;
-};
-
 export type AnswerInput = {
-  questionId: Scalars['ID']['input'];
-};
-
-export type Form = {
-  __typename?: 'Form';
-  description?: Maybe<Scalars['String']['output']>;
-  id: Scalars['ID']['output'];
-  questions: Array<Question>;
-  title: Scalars['String']['output'];
-};
-
-export type Mutation = {
-  __typename?: 'Mutation';
-  createForm: Form;
-  submitResponse: Response;
-};
-
-
-export type MutationCreateFormArgs = {
-  description?: InputMaybe<Scalars['String']['input']>;
-  questions: Array<QuestionInput>;
-  title: Scalars['String']['input'];
-};
-
-
-export type MutationSubmitResponseArgs = {
-  answers: Array<AnswerInput>;
-  formId: Scalars['ID']['input'];
-};
-
-export type Query = {
-  __typename?: 'Query';
-  form?: Maybe<Form>;
-  forms: Array<Form>;
-  responses: Array<Response>;
-};
-
-
-export type QueryFormArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-export type QueryResponsesArgs = {
-  formId: Scalars['ID']['input'];
-};
-
-export type Question = {
-  __typename?: 'Question';
-  id: Scalars['ID']['output'];
-  options?: Maybe<Array<Scalars['String']['output']>>;
-  title: Scalars['String']['output'];
-  type: QuestionType;
+  questionId: string | number;
+  value: Array<string>;
 };
 
 export type QuestionInput = {
-  options?: InputMaybe<Array<Scalars['String']['input']>>;
-  title: Scalars['String']['input'];
+  options?: Array<string> | null | undefined;
+  title: string;
   type: QuestionType;
 };
 
-export enum QuestionType {
-  Checkbox = 'CHECKBOX',
-  Date = 'DATE',
-  MultipleChoice = 'MULTIPLE_CHOICE',
-  Text = 'TEXT'
-}
-
-export type Response = {
-  __typename?: 'Response';
-  answers: Array<Answer>;
-  formId: Scalars['ID']['output'];
-  id: Scalars['ID']['output'];
-  submittedAt: Scalars['String']['output'];
-};
+export type QuestionType =
+  | 'CHECKBOX'
+  | 'DATE'
+  | 'MULTIPLE_CHOICE'
+  | 'TEXT';
 
 export type GetFormsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetFormsQuery = { forms: Array<{ id: string, title: string, description: string | null }> };
+
+export type GetFormQueryVariables = Exact<{
+  id: string | number;
+}>;
+
+
+export type GetFormQuery = { form: { id: string, title: string, description: string | null, questions: Array<{ id: string, title: string, type: QuestionType, options: Array<string> | null }> } | null };
+
+export type GetResponsesQueryVariables = Exact<{
+  formId: string | number;
+}>;
+
+
+export type GetResponsesQuery = { form: { id: string, title: string, description: string | null, questions: Array<{ id: string, title: string }> } | null, responses: Array<{ id: string, submittedAt: string, answers: Array<{ questionId: string, value: Array<string> }> }> };
+
+export type SubmitResponseMutationVariables = Exact<{
+  formId: string | number;
+  answers: Array<AnswerInput> | AnswerInput;
+}>;
+
+
+export type SubmitResponseMutation = { submitResponse: { id: string, submittedAt: string } };
+
+export type CreateFormMutationVariables = Exact<{
+  title: string;
+  description?: string | null | undefined;
+  questions: Array<QuestionInput> | QuestionInput;
+}>;
+
+
+export type CreateFormMutation = { createForm: { id: string, title: string } };
 
 export class TypedDocumentString<TResult, TVariables>
   extends String
@@ -131,15 +85,79 @@ export const GetFormsDocument = new TypedDocumentString(`
   }
 }
     `);
+export const GetFormDocument = new TypedDocumentString(`
+    query GetForm($id: ID!) {
+  form(id: $id) {
+    id
+    title
+    description
+    questions {
+      id
+      title
+      type
+      options
+    }
+  }
+}
+    `);
+export const GetResponsesDocument = new TypedDocumentString(`
+    query GetResponses($formId: ID!) {
+  form(id: $formId) {
+    id
+    title
+    description
+    questions {
+      id
+      title
+    }
+  }
+  responses(formId: $formId) {
+    id
+    submittedAt
+    answers {
+      questionId
+      value
+    }
+  }
+}
+    `);
+export const SubmitResponseDocument = new TypedDocumentString(`
+    mutation SubmitResponse($formId: ID!, $answers: [AnswerInput!]!) {
+  submitResponse(formId: $formId, answers: $answers) {
+    id
+    submittedAt
+  }
+}
+    `);
+export const CreateFormDocument = new TypedDocumentString(`
+    mutation CreateForm($title: String!, $description: String, $questions: [QuestionInput!]!) {
+  createForm(title: $title, description: $description, questions: $questions) {
+    id
+    title
+  }
+}
+    `);
 
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
     GetForms: build.query<GetFormsQuery, GetFormsQueryVariables | void>({
       query: (variables) => ({ document: GetFormsDocument as unknown as string, variables })
     }),
+    GetForm: build.query<GetFormQuery, GetFormQueryVariables>({
+      query: (variables) => ({ document: GetFormDocument as unknown as string, variables })
+    }),
+    GetResponses: build.query<GetResponsesQuery, GetResponsesQueryVariables>({
+      query: (variables) => ({ document: GetResponsesDocument as unknown as string, variables })
+    }),
+    SubmitResponse: build.mutation<SubmitResponseMutation, SubmitResponseMutationVariables>({
+      query: (variables) => ({ document: SubmitResponseDocument as unknown as string, variables })
+    }),
+    CreateForm: build.mutation<CreateFormMutation, CreateFormMutationVariables>({
+      query: (variables) => ({ document: CreateFormDocument as unknown as string, variables })
+    }),
   }),
 });
 
 export { injectedRtkApi as api };
-export const { useGetFormsQuery, useLazyGetFormsQuery } = injectedRtkApi;
+export const { useGetFormsQuery, useLazyGetFormsQuery, useGetFormQuery, useLazyGetFormQuery, useGetResponsesQuery, useLazyGetResponsesQuery, useSubmitResponseMutation, useCreateFormMutation } = injectedRtkApi;
 
