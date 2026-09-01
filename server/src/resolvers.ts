@@ -1,51 +1,25 @@
 import crypto from "node:crypto";
-import { mockedForms, mockedResponses } from "./mock.js";
-
-export interface Form {
-  id: string;
-  title: string;
-  description?: string | null;
-  questions: Question[];
-}
-
-type QuestionType = "TEXT" | "MULTIPLE_CHOICE" | "CHECKBOX" | "DATE";
-
-interface Question {
-  id: string;
-  title: string;
-  type: QuestionType;
-  options?: string[] | null;
-}
-
-interface Answer {
-  questionId: string;
-  value: string[];
-}
-
-export interface Response {
-  id: string;
-  formId: string;
-  answers: Answer[];
-  submittedAt: string;
-}
-
-const forms: Form[] = [...mockedForms];
-
-const responses: Response[] = [...mockedResponses];
+import type {
+  Answer,
+  Form,
+  Question,
+  Response,
+} from "./types/generatedServerTypes.js";
+import { forms, responses } from "./db.js";
 
 export const resolvers = {
   Query: {
     forms: () => forms,
-    form: (parent: unknown, args: { id: string }) => {
+    form: (_: unknown, args: { id: string }) => {
       return forms.find((form) => form.id === args.id);
     },
-    responses: (parent: unknown, args: { formId: string }) => {
+    responses: (_: unknown, args: { formId: string }) => {
       return responses.filter((response) => response.formId === args.formId);
     },
   },
   Mutation: {
     createForm: (
-      parent: unknown,
+      _: unknown,
       args: {
         title: string;
         description?: string;
@@ -69,7 +43,7 @@ export const resolvers = {
     },
 
     submitResponse: (
-      parent: unknown,
+      _: unknown,
       args: {
         formId: string;
         answers: Answer[];

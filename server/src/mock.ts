@@ -1,4 +1,4 @@
-import type { Form, Response } from "./resolvers.js";
+import type { Form, Response } from "./types/generatedServerTypes.js";
 
 export const mockedForms: Form[] = [
   {
