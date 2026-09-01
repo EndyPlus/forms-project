@@ -4,7 +4,9 @@
   "scripts": {
     "dev": "pnpm --parallel --recursive dev",
     "build": "pnpm --recursive build",
-    "preinstall": "npx only-allow pnpm"
+    "preinstall": "npx only-allow pnpm",
+    "codegen": "graphql-codegen --config codegen.ts",
+    "codegen:watch": "graphql-codegen --config codegen.ts --watch"
   },
   "devEngines": {
     "packageManager": {
@@ -14,5 +16,12 @@
     }
   },
   "packageManager": "pnpm@11.24.0",
-  "type": "module"
+  "type": "module",
+  "devDependencies": {
+    "@graphql-codegen/cli": "^7.3.1",
+    "@graphql-codegen/typescript": "^6.1.0",
+    "@graphql-codegen/typescript-operations": "^6.1.6",
+    "@graphql-codegen/typescript-resolvers": "^6.1.0",
+    "@graphql-codegen/typescript-rtk-query": "^4.0.4"
+  }
 }

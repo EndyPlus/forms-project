@@ -7,9 +7,7 @@
     "dev": "vite",
     "build": "pnpm codegen && tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "codegen": "graphql-codegen --config codegen.ts",
-    "codegen:watch": "graphql-codegen --config codegen.ts --watch"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@graphql-typed-document-node/core": "^3.2.0",
@@ -26,10 +24,6 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@graphql-codegen/cli": "^7.3.1",
-    "@graphql-codegen/typescript": "^6.1.0",
-    "@graphql-codegen/typescript-operations": "^6.1.6",
-    "@graphql-codegen/typescript-rtk-query": "^4.0.4",
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
